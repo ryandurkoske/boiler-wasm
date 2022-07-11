@@ -23,11 +23,7 @@ NATIVE_TARGET := $(NATIVE_BIN_DIR)/program.exe
 WASM_BIN_DIR := bin
 WASM_TARGET := $(WASM_BIN_DIR)/program.wasm
 
-#NATIVE_OBJS := $(basename $(NATIVE_OBJS))
-#WASM_OBJ := $(WASM_SRC:$(WASM_SRC_DIR)/%.c=$(WASM_OBJ_DIR)/%.o) \
-	$(SHARED_SRC:$(SHARED_SRC_DIR)/%.c=$(WASM_OBJ_DIR)/%.o)
 
-#NATIVE_DEPS := $(NATIVE_OBJS:.o=.d)
 
 .PHONY: all native wasm clean clean_native clean_wasm
 

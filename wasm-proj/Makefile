@@ -37,8 +37,8 @@ OBJS := $(SRCS:%=$(NATIVE_OBJ_DIR)/%.o)
 
 $(NATIVE_OBJ_DIR)/%.c.o: C_PREPROCESSOR_FLAGS := -Iinclude -MMD -MP
 $(NATIVE_OBJ_DIR)/%.c.o: COMPILER_FLAGS   := -Wall
-$(NATIVE_TARGET): LDFLAGS  := -Llib
-$(NATIVE_TARGET): LDLIBS   :=
+$(NATIVE_TARGET): LDFLAGS := -Llib
+$(NATIVE_TARGET): LDLIBS :=
 
 $(NATIVE_TARGET): LD := clang
 $(NATIVE_OBJ_DIR)/%.c.o: CC := clang
@@ -68,7 +68,7 @@ $(WASM_OBJ_DIR)/%.c.o: COMPILER_FLAGS := -Wall \
 	-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1 \
 	$(D_FLAGS)
 
-$(WASM_TARGET): LDFLAGS  := -Llib \
+$(WASM_TARGET): LDFLAGS := -Llib \
 	--no-entry \
 	--strip-all \
 	--export-dynamic \

@@ -18,8 +18,9 @@ WASM_EXPORT void hello_wasm(){
 WASM_EXPORT uint32_t compute_add(uint32_t* ptr, uint32_t count){
 	uint32_t sum = 0;
 	for(int i = 0; i < count; i++){
-		printf("hello: %d\n", ptr[i]);
 		sum += ptr[i];
 	}
+
+	//printf("%d primes: \n", count);
 	return sum;
 }

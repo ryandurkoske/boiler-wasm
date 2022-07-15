@@ -6,18 +6,19 @@ document.getElementById("hello_wasm").onclick = function(){
 	WASM.hello_wasm();
 }
 document.getElementById("compute_wasm").onclick = function(){
-	for(){
+	let then = Date.now();
+	for(let i = 1; i < primes.length; i++){
+		let ptr = WASM.malloc(i*4);
 		
+		let data_view = WASM.ui32(ptr,i);
+		data_view.set(new Uint32Array(primes.buffer,0,i));
+
+		console.log(WASM.compute_add(ptr,i));
+
+		WASM.free(ptr);
 	}
-	let ptr = WASM.malloc(primes.byteLength);
-	
-	let data_view = WASM.ui32(ptr,primes.length);
-	data_view.set(primes);
+	console.log("Took " + (Date.now()-then) + "ms");
 
-	console.log(ptr,primes,new Uint32Array(WASM.rawmem.buffer));
-
-	console.log(WASM.compute_add(ptr,7));
-	WASM.free(ptr);
 }
 
 let primes = new Uint32Array([2,3,5,7,11,13,17,19,23,29,

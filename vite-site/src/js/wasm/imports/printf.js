@@ -52,32 +52,43 @@ function add_padding_to_number(prefix, number, padding_length, flags) {
 
 
 
-export const printf_load = function (funcs) {
-    funcs.peek = function () {
+export const printf_imports = Object.freeze({
+    peek() {
         console.log(printf_buffer);
-    };
-    funcs.flush = function () {
+    },
+    flush() {
         console.log(printf_buffer);
         printf_buffer = '';
-    };
-    funcs.printf_flush = function () {
-        funcs.flush();
-    };
-    funcs.putchar = function (value) {
+    },
+    printf_flush() {
+        flush();
+    },
+    putchar(value) {
         let string = String.fromCharCode(value);
         return handle_newline_and_update(string);
-    };
-    funcs.printf_string = function (begin, end) {
+    },
+	puts: function(pointer) {
+
+		let si = pointer;
+		let view = WASM.view_ui8();
+		let max_si = view.byteLength;
+		while (view[si] != 0 && si < max_si) ++si;
+		console.log(printf_buffer+WASM.string(pointer, si - pointer));
+		printf_buffer = '';
+
+		return 0;
+	},
+    printf_string(begin, end) {
         let string = WASM.string(begin, end - begin);
         return handle_newline_and_update(string);
-    };
-    funcs.printf_integer = function (flags, width, precision, length_char, length, type, value) {
+    },
+    printf_integer(flags, width, precision, length_char, length, type, value) {
 
         if (precision == 0 && value == 0) return 0;
         let absolute = (value < 0 ? -value : value);
         let number = '';
 
-        if (!ixx[length]) { console.log(ixx, length); funcs.flush(); }
+        if (!ixx[length]) { console.log(ixx, length); flush(); }
         number = (new ixx[length]([absolute]))[0].toString();
         let sign = (
             value < 0 ? '-' :
@@ -90,30 +101,30 @@ export const printf_load = function (funcs) {
         if (precision >= 0) flags &= ~flag_zero_pad;
         let padding_length = width - number.length - sign.length;
         return add_padding_to_number(sign, number, padding_length, flags);
-    };
-    funcs.printf_int32 = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_integer(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_int64 = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_integer(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_long = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_integer(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_long_long = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_integer(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_intmax = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_integer(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_signed_size = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_integer(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_ptrdiff = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_integer(flags, width, precision, length_char, length, type, value);
-    };
+    },
+    printf_int32(flags, width, precision, length_char, length, type, value) {
+        return printf_integer(flags, width, precision, length_char, length, type, value);
+    },
+    printf_int64(flags, width, precision, length_char, length, type, value) {
+        return printf_integer(flags, width, precision, length_char, length, type, value);
+    },
+    printf_long(flags, width, precision, length_char, length, type, value) {
+        return printf_integer(flags, width, precision, length_char, length, type, value);
+    },
+    printf_long_long(flags, width, precision, length_char, length, type, value) {
+        return printf_integer(flags, width, precision, length_char, length, type, value);
+    },
+    printf_intmax(flags, width, precision, length_char, length, type, value) {
+        return printf_integer(flags, width, precision, length_char, length, type, value);
+    },
+    printf_signed_size(flags, width, precision, length_char, length, type, value) {
+        return printf_integer(flags, width, precision, length_char, length, type, value);
+    },
+    printf_ptrdiff(flags, width, precision, length_char, length, type, value) {
+        return printf_integer(flags, width, precision, length_char, length, type, value);
+    },
 
-    funcs.printf_unsigned = function (flags, width, precision, length_char, length, type, value) {
+    printf_unsigned(flags, width, precision, length_char, length, type, value) {
         if (precision == 0 && value == 0) return 0;
         let c = String.fromCharCode(type);
         let lc = String.fromCharCode(type | 0x20); // toLowerCase
@@ -129,30 +140,30 @@ export const printf_load = function (funcs) {
         if (precision >= 0) flags &= ~flag_zero_pad;
         let padding_length = width - number.length - prefix.length;
         return add_padding_to_number(prefix, number, padding_length, flags);
-    };
-    funcs.printf_uint32 = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_unsigned(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_uint64 = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_unsigned(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_unsigned_long = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_unsigned(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_unsigned_long_long = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_unsigned(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_uintmax = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_unsigned(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_size = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_unsigned(flags, width, precision, length_char, length, type, value);
-    };
-    funcs.printf_unsigned_ptrdiff = function (flags, width, precision, length_char, length, type, value) {
-        return funcs.printf_unsigned(flags, width, precision, length_char, length, type, value);
-    };
+    },
+    printf_uint32(flags, width, precision, length_char, length, type, value) {
+        return printf_unsigned(flags, width, precision, length_char, length, type, value);
+    },
+    printf_uint64(flags, width, precision, length_char, length, type, value) {
+        return printf_unsigned(flags, width, precision, length_char, length, type, value);
+    },
+    printf_unsigned_long(flags, width, precision, length_char, length, type, value) {
+        return printf_unsigned(flags, width, precision, length_char, length, type, value);
+    },
+    printf_unsigned_long_long(flags, width, precision, length_char, length, type, value) {
+        return printf_unsigned(flags, width, precision, length_char, length, type, value);
+    },
+    printf_uintmax(flags, width, precision, length_char, length, type, value) {
+        return printf_unsigned(flags, width, precision, length_char, length, type, value);
+    },
+    printf_size(flags, width, precision, length_char, length, type, value) {
+        return printf_unsigned(flags, width, precision, length_char, length, type, value);
+    },
+    printf_unsigned_ptrdiff(flags, width, precision, length_char, length, type, value) {
+        return printf_unsigned(flags, width, precision, length_char, length, type, value);
+    },
 
-    funcs.printf_double = function (flags, width, precision, length_char, length, type, value) {
+    printf_double(flags, width, precision, length_char, length, type, value) {
         let c = String.fromCharCode(type);
         let lc = String.fromCharCode(type | 0x20);
         if (lc == 'a') {
@@ -261,9 +272,9 @@ export const printf_load = function (funcs) {
             let padding_length = width - sign.length - number.length;
             return add_padding_to_number(sign, number, padding_length, flags);
         }
-    };
+    },
 
-    funcs.printf_cstring = function (flags, width, precision, length_char, length, type, pointer) {
+    printf_cstring(flags, width, precision, length_char, length, type, pointer) {
 
         if (length != 1) {
             throw 'unsupported char length in cstring: ' + length;
@@ -285,10 +296,10 @@ export const printf_load = function (funcs) {
             string = ((flags & flag_left_align) ? string + padding : padding + string);
         }
         return handle_newline_and_update(string);
-    };
+    },
 
 
-    funcs.printf_char = function(flags, width, precision, length_char, length, type, value) {
+    printf_char(flags, width, precision, length_char, length, type, value) {
         let string = String.fromCharCode(value);
         let padding_length = width - string.length;
         if (padding_length > 0) {
@@ -296,9 +307,9 @@ export const printf_load = function (funcs) {
             string = ((flags & flag_left_align) ? string + padding : padding + string);
         }
         return handle_newline_and_update(string);
-    };
+    },
 
-    funcs.printf_pointer = function(flags, width, precision, length_char, length, type, value) {
+    printf_pointer(flags, width, precision, length_char, length, type, value) {
 
         let pointer = (value == 0 ? '(nil)' : '0x' + value.toString(16));
         let padding_length = width - pointer.length;
@@ -308,5 +319,5 @@ export const printf_load = function (funcs) {
         }
         printf_buffer += pointer;
         return pointer.length;
-    };
-}
+    }
+});

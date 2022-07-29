@@ -1,6 +1,7 @@
 
-#include "wasm/io.h"
+#include "wasm/stdio.h"
 
+#include "wasm/stdlib.h"
 #include "wasm/impexp.h"
 #include <stdarg.h>
 #include <stdint.h>
@@ -48,6 +49,7 @@ WASM_IMPORT int printf_double(int flags, int width, int precision, char length_c
 WASM_IMPORT int printf_cstring(int flags, int width, int precision, char length_char, uint8_t length, char type, char const* value);
 WASM_IMPORT int printf_char(int flags, int width, int precision, char length_char, uint8_t length, char type, char value);
 WASM_IMPORT int printf_pointer(int flags, int width, int precision, char length_char, uint8_t length, char type, void* value);
+
 
 int printf(char const* format, ...)
 {

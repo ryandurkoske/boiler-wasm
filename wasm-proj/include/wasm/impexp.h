@@ -6,11 +6,9 @@
 #define WASM_IMPORT extern
 
 #endif
-
 #ifdef TARGET_NATIVE
 
 #define WASM_EXPORT
 #define WASM_IMPORT
 
 #endif
-

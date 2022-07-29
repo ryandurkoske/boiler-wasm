@@ -13,11 +13,22 @@
     <h1>WASM-Boiler Sample Functionality</h1>
 	
 	<button id="hello_wasm">Hello World from WASM</button>
-	<button id="compute_wasm">Compute in WASM</button>
-	
+	<br/>
+
+	<button id="compute_js">Compute add in JS</button>
+	<button id="compute_wasm">Compute add in WASM</button>
+	<button id="compute_wasm_unrolled">Compute manually unrolled add in WASM</button>
+	<button id="compute_wasm_vec">Compute SIMD in WASM</button>
+	<br/>
+
+	<button id="compute_branch">Compute bad branch predictions in WASM</button>
+	<button id="compute_goodbranch">Compute good branch predictions in WASM</button>
+	<button id="compute_branchless">Compute branchless in WASM</button>
+	<br/>
 
 	<p>check console for printf</p>
-
     
+	<p id="result"></p>
+
   </body>
 </html>

@@ -19,7 +19,7 @@ SHARED_SRC := $(wildcard $(SHARED_SRC_DIR)/*.c) \
 
 #add more wasm folders here
 WASM_SRC := $(wildcard $(WASM_SRC_DIR)/*.c) \
-	$(wildcard $(WASM_SRC_DIR)/stdlib/*.c)
+	$(wildcard $(WASM_SRC_DIR)/weblibc/*.c)
 
 OBJ_DIR := builds
 NATIVE_OBJ_DIR := $(OBJ_DIR)/native
@@ -46,7 +46,7 @@ OBJS := $(SRCS:%=$(NATIVE_OBJ_DIR)/%.o)
 D_FLAGS := -DTARGET_NATIVE
 
 $(NATIVE_OBJ_DIR)/%.c.o: C_PREPROCESSOR_FLAGS := -Iinclude -MMD -MP
-$(NATIVE_OBJ_DIR)/%.c.o: COMPILER_FLAGS := -Wall $(D_FLAGS)
+$(NATIVE_OBJ_DIR)/%.c.o: COMPILER_FLAGS := -O3 -Wall $(D_FLAGS)
 $(NATIVE_TARGET): LDFLAGS := -Llib
 $(NATIVE_TARGET): LDLIBS :=
 
@@ -70,14 +70,11 @@ D_FLAGS := -DTARGET_WASM
 
 $(WASM_OBJ_DIR)/%.c.o: C_PREPROCESSOR_FLAGS := -Iinclude -MMD -MP
 $(WASM_OBJ_DIR)/%.c.o: COMPILER_FLAGS := -Wall \
-	-Os \
+	-Ofast \
 	-nostdlib \
 	-fvisibility=hidden \
 	-ffunction-sections \
 	-fdata-sections \
-	-DPRINTF_DISABLE_SUPPORT_FLOAT=1 \
-	-DPRINTF_DISABLE_SUPPORT_LONG_LONG=1 \
-	-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1 \
 	$(D_FLAGS)
 
 $(WASM_TARGET): LDFLAGS := -Llib \
@@ -85,7 +82,7 @@ $(WASM_TARGET): LDFLAGS := -Llib \
 	--strip-all \
 	--export-dynamic \
 	--allow-undefined \
-	--initial-memory=131072 \
+	--import-memory \
 	--error-limit=0 \
 	--lto-O3 \
 	-O3 \
@@ -93,7 +90,7 @@ $(WASM_TARGET): LDFLAGS := -Llib \
 $(WASM_TARGET): LDLIBS := 
 
 $(WASM_TARGET): LD := wasm-ld
-$(WASM_OBJ_DIR)/%.c.o: CC := clang --target=wasm32
+$(WASM_OBJ_DIR)/%.c.o: CC := clang --target=wasm32 #-msimd128 -mbulk-memory -mexception-handling
 
 $(WASM_TARGET): $(OBJS)
 	$(LD) -o $@ $(LDFLAGS) $(LDLIBS) $^

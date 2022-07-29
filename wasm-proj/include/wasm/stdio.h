@@ -1,4 +1,4 @@
-
+#pragma once
 
 #ifdef TARGET_WASM
 

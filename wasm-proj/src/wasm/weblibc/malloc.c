@@ -1,7 +1,6 @@
-#include "wasm/malloc.h"
+#include "wasm/stdlib.h"
 
 #include "wasm/impexp.h"
-
 
 // walloc.c: a small malloc implementation for use in WebAssembly targets
 // Copyright (c) 2020 Igalia, S.L.

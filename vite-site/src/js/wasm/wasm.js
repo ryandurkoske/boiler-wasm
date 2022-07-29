@@ -1,34 +1,41 @@
-import { printf_load } from "./imports/printf";
+import { printf_imports } from "./imports/printf";
 
 
+const memory = new WebAssembly.Memory({
+	initial: 2,
+	maximum: 100
+});
 
-
-const importFunctions = {
-    
-};
-
-printf_load(importFunctions)
+const importFunctions = Object.freeze({
+    memory: memory,
+	...printf_imports
+});
 
 const wasmImport = {
     env: importFunctions,
-    js: { }//mem is owned by the wasm
+    js: { }
 };
 
+console.log(wasmImport.env)
 
 export const WASM = await WebAssembly.instantiateStreaming(fetch("src/assets/program.wasm"), wasmImport).then((module)=>{
-	let exp = module.instance.exports;
+	const exp = module.instance.exports;
 	return {
 		/**
 		 * ADD YOUR EXPORTED FUNCTIONS HERE
-		 * 
 		 */
 
 		hello_wasm: exp.hello_wasm,
 		compute_add: exp.compute_add,
+		compute_add_vec: exp.compute_add_vec,
+		compute_add_unrolled: exp.compute_add_unrolled,
 
+		compute_branch: exp.compute_branch,
+		compute_branch_predict: exp.compute_branch_predict,
+		compute_branchless: exp.compute_branchless,
 		//=================================
 
-		rawmem: exp.memory,
+		rawmem: memory,
 		
 		malloc: exp.malloc,
 		free: exp.free,
@@ -75,7 +82,7 @@ export const WASM = await WebAssembly.instantiateStreaming(fetch("src/assets/pro
 			return this.ascii_decoder.decode(new Uint8Array(this.rawmem.buffer, pointer, len));
 		},
 		view_ui8: function(){
-			return new Uint8Array(this.rawmem.buffer, 0, rawmem.buffer.byteLength);
+			return new Uint8Array(this.rawmem.buffer, 0, this.rawmem.buffer.byteLength);
 		}
 	}
 });

@@ -20,8 +20,6 @@ function compute(work){
 
 	let dt = (performance.now() - then);//convert ms->ns
 
-	console.log(primes.length);
-
 	document.getElementById("result").innerHTML = "The first "+ prime_count + " primes sum up to " + val + "<br>Took " + (dt) + "ms";
 	WASM.free(ptr);
 }

@@ -7,6 +7,12 @@ uint32_t compute_add(uint32_t*, uint32_t);
 
 uint32_t compute_add_unrolled(uint32_t*, uint32_t);
 
+uint32_t compute_branchless(uint32_t*, uint32_t);
+
+uint32_t compute_branch_predict(uint32_t*, uint32_t);
+
+uint32_t compute_branch(uint32_t*, uint32_t);
+
 static uint32_t primes[100000] = {
 	2,3,5,7,11,13,17,19,23,
 29,31,37,41,43,47,53,59,61,

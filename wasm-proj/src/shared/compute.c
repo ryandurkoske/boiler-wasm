@@ -50,7 +50,7 @@ WASM_EXPORT uint32_t compute_branch(uint32_t* ptr, uint32_t count){
 
 WASM_EXPORT uint32_t compute_branch_predict(uint32_t* ptr, uint32_t count){
 	uint32_t sum = 0;
-	for(int i = 0; i < count; i++){
+	for(int i = 0; __builtin_expect(i < count, true); i++){
 		sum++;
 		if(__builtin_expect(ptr[i]%MOD_VAL==0,false)){//no reason, just want it to be hard to branchless optimize
 			sum%=17;
@@ -63,12 +63,13 @@ WASM_EXPORT uint32_t compute_branch_predict(uint32_t* ptr, uint32_t count){
 
 WASM_EXPORT uint32_t compute_branchless(uint32_t* ptr, uint32_t count){
 	uint32_t sum = 0;
-	for(int i = 0; i < count; i++){
+	for(int i = 0; __builtin_expect(i < count, true); i++){
 		sum++;
+		sum = (sum%MOD_VAL==0)*(sum%17)+(sum%MOD_VAL!=0)*sum;
 		//sum = ptr[i]%MOD_VAL==0 ? sum%17 : sum;
-		if(__builtin_unpredictable(ptr[i]%MOD_VAL==0)){//no reason, just want it to be hard to branchless optimize
+		/*if(__builtin_unpredictable(ptr[i]%MOD_VAL==0)){//no reason, just want it to be hard to branchless optimize
 			sum%=17;
-		}
+		}*/
 	}
 
 	return sum;

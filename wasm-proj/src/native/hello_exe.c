@@ -42,15 +42,13 @@ int main(){
 	int32_t res;
 	double dt;
 
-	int32_t prime_count = 2003;
+	int32_t prime_count = 100000;
 	
 	StartCounter();
-	for(int i = 0; i < 100000; i++){
-		res = compute_branchless(&primes[0], prime_count);
-	}
+	res = compute_branch(&primes[0], prime_count);
 	dt = GetCounter();
 
 	printf("The first %d primes sum up to %d\n", prime_count, res);
-	printf("Took: %.5f\n", dt);
+	printf("Took: %.5fms\n", dt);
 
 }
